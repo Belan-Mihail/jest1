@@ -21,6 +21,14 @@
         <div data-listener="false" class="circle circle3" id="button3"></div>
         <div data-listener="false" class="circle circle4" id="button4"></div>
         <div class="scorebox" id="score">0</div>
+        <!-- 
+            Но у нас есть проблема. Нет стандарта,
+кросс-браузерный способ проверки, был ли подключен прослушиватель событий.
+            И вот тут-то и появляется настраиваемый атрибут прослушивателя данных в index.html.
+Вы увидите в наших кругах, что по умолчанию для атрибута прослушивателя данных установлено значение false.
+Поэтому, когда мы присоединяем прослушиватель событий, мы обновим этот атрибут до true,
+и как только это будет сделано, теперь у нас есть кое-что, что мы можем протестировать.
+         -->
         <button class="button" onclick="newGame()">new game</button>
     </div>
     <script src="scripts/game.js"></script>

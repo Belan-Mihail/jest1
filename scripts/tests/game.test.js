@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 
-const { game } = require("../game");
+const { game, newGame, showScore, addTurn, lightsOn, showTurns } = require("../game");
 //импорт game
 
 /*
@@ -57,6 +57,88 @@ describe("game object contains correct keys", () => {
 Последнее, что мы хотим добавить, это то, что наш массив выбора должен содержать
 ID четырех кнопок, и мы собираемся использовать этот массив для генерации нашего случайного выбора хода.
 */
+    test("turnNumber key exists", () => {
+    expect("turnNumber" in game).toBe(true);
+});
 });
 
+describe("Newgame works correctly", () => {
+    beforeAll(() => {
+        /*
+        Я хочу использовать другую функцию beforeAll, потому что мы хотим установить
+добавьте в состояние игры несколько поддельных значений, чтобы увидеть, сбрасывает ли их новая игровая функция.
+        */
+       game.score = 42;
+       game.currentGame = [1,2,3];
+       game.playerMoves = [1,2,3];
+       document.getElementById("score").innerText = "42";
+       newGame();
+    });
+    test("should set game score to zero", () => {
+        expect(game.score).toEqual(0);
+    });
+    test("should add one move to the computer's game array", () => {
+        expect(game.currentGame.length).toBe(1);
+    }); 
+    //заменили тест так как добавляем функцию которая добавляет один ход
+    test("should set game playerMoves to empty massive", () => {
+        expect(game.playerMoves.length).toEqual(0);
+    });
+    test("should display 0 for the element with id of score", () => {
+        expect(document.getElementById("score").innerText).toEqual(0);
+    });
+    //очистка ДОМ от счета
+    test("expect data-listener to be true", () => {
+        newGame();
+        const elements = document.getElementsByClassName("circle");
+        //собираем все круги в одну переменную
+        for (let element of elements) {
+            expect(element.getAttribute("data-listener")).toEqual("true");
+            //проходим по всем кругам (с атрибутами data-listener) и проверяем на true
+        }
+    }); 
+})
+
+describe("gameplay works correctly", () => {
+    beforeEach(() => {
+/*
+beforeAll запускается перед всеми тестами,
+beforeEach запускается перед запуском каждого теста, поэтому мы будем каждый раз сбрасывать состояние.
+*/  
+    game.score = 0;
+    game.currentGame = [];
+    game.playerMoves = [];
+    addTurn();
+    });
+    /*
+    Еще одна полезная функция — afterEach. Наши тесты изменят игру
+state, но мы знаем, что по принципу RITE наш тест должен быть изолирован. То есть,
+их можно запускать в любом порядке, поэтому давайте снова сбрасывать состояние после каждого теста.
+    */
+    afterEach(() => {
+    game.score = 0;
+    game.currentGame = [];
+    game.playerMoves = [];
+    })
+    //чтобы проверить что функция addTurn() правильно мы запустим ее еще раз. Первый раз
+    // мы ее запускаем в блоке beforeEach и она должна добавлять один ход в массив
+    // таким образом если функция работает правильно при повторном вызове в массиве 
+    // должно будет 2 элемента
+    test("addTurn adds a new turn to the game", () => {
+        addTurn();
+        expect(game.currentGame.length).toBe(2);
+    });
+    test("should add correct class to light up the buttons", () => {
+        let button = document.getElementById(game.currentGame[0]);
+        lightsOn(game.currentGame[0]);
+        expect(button.classList).toContain("light");
+        //toContain - содержит.  button содержит classList light
+    }); 
+    test("showTurns should update game.turnNumber", () => {
+        game.turnNumber = 42;
+        showTurns(); //ы собираемся вызвать showTurns, который должен сбросить turnNumber
+        expect(game.turnNumber).toBe(0);
+        //равен ли теперь turnNumber нулю
+    });
+})
 
